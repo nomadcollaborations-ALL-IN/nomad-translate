@@ -1,0 +1,14 @@
+{
+  "name": "Nomad Translate",
+  "short_name": "Nomad Tr",
+  "description": "Offline crew translator — EN / ES / FR",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#0E1116",
+  "theme_color": "#0E1116",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

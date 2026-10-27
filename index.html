@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+    <meta name="theme-color" content="#0E1116" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <title>Nomad Translate</title>
+    <script type="module" crossorigin src="./assets/index-Dx1R44HU.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-4_U_FVYe.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <img class="logo" src="nomad-logo.png" alt="Nomad" />
+        <div>
+          <h1>Translate</h1>
+          <p class="sub">offline crew translator · EN · ES · FR</p>
+        </div>
+      </div>
+      <div class="meter">
+        <span class="meter-label">latency</span>
+        <span id="latency" class="latency-badge">—</span>
+      </div>
+    </header>
+
+    <div id="status" class="status">Loading…</div>
+
+    <section class="pack">
+      <button id="offlineBtn" class="pack-btn">⬇ Make it work offline (download once on Wi-Fi)</button>
+      <div id="packBar" class="pack-bar" hidden><div id="packBarFill" class="pack-bar-fill"></div></div>
+      <p class="pack-note" id="offlineNote">Download on Wi-Fi once — then talk, translate, and hear it back with no signal, in a tunnel or confined space.</p>
+    </section>
+
+    <main class="sides">
+      <div class="side" data-side="A">
+        <div class="side-head">
+          <span class="dot" id="dot-A"></span>
+          <select class="langsel" id="lang-A">
+            <option value="en">English</option>
+            <option value="es" selected>Español</option>
+            <option value="fr">Français (Québec)</option>
+          </select>
+        </div>
+        <button id="ptt-A" class="ptt">🎤 <span>Hold to talk</span></button>
+        <div id="interim-A" class="interim"></div>
+        <div id="chips-A" class="chips"></div>
+      </div>
+
+      <div class="side" data-side="B">
+        <div class="side-head">
+          <span class="dot" id="dot-B"></span>
+          <select class="langsel" id="lang-B">
+            <option value="en" selected>English</option>
+            <option value="es">Español</option>
+            <option value="fr">Français (Québec)</option>
+          </select>
+        </div>
+        <button id="ptt-B" class="ptt">🎤 <span>Hold to talk</span></button>
+        <div id="interim-B" class="interim"></div>
+        <div id="chips-B" class="chips"></div>
+      </div>
+    </main>
+
+    <section class="transcript-wrap">
+      <h3>Transcript</h3>
+      <div id="transcript" class="transcript"></div>
+    </section>
+
+    <footer class="foot">
+      <p>After the one-time download, the whole conversation runs on the phone with no signal —
+      talk, translate, and hear it back. On-device speech recognition takes a few seconds per
+      line in a browser (the native app is faster). CFRP/Québec crew terms auto-corrected.</p>
+    </footer>
+
+  </body>
+</html>
