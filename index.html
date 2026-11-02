@@ -5,9 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
     <meta name="theme-color" content="#0E1116" />
     <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" />
+    <!-- home-screen install -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Nomad Tr" />
+    <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <title>Nomad Translate</title>
-    <script type="module" crossorigin src="./assets/index-Dx1R44HU.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-4_U_FVYe.css">
+    <script type="module" crossorigin src="./assets/index-C7y7RlUL.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-ruh8HoxU.css">
   </head>
   <body>
     <header class="topbar">
@@ -18,60 +25,164 @@
           <p class="sub">offline crew translator · EN · ES · FR</p>
         </div>
       </div>
-      <div class="meter">
-        <span class="meter-label">latency</span>
-        <span id="latency" class="latency-badge">—</span>
+      <div class="top-right">
+        <div class="meter" id="meterWrap" hidden>
+          <span class="meter-label">latency</span>
+          <span id="latency" class="latency-badge">—</span>
+        </div>
+        <button id="gearBtn" class="gear" title="Settings" hidden>⚙</button>
       </div>
     </header>
 
     <div id="status" class="status">Loading…</div>
 
-    <section class="pack">
-      <button id="offlineBtn" class="pack-btn">⬇ Make it work offline (download once on Wi-Fi)</button>
-      <div id="packBar" class="pack-bar" hidden><div id="packBarFill" class="pack-bar-fill"></div></div>
-      <p class="pack-note" id="offlineNote">Download on Wi-Fi once — then talk, translate, and hear it back with no signal, in a tunnel or confined space.</p>
+    <!-- ============ SETUP ============ -->
+    <section id="view-setup" class="view">
+      <ol class="steps">
+        <!-- Step 1: access code -->
+        <li class="step" id="step-code">
+          <h2><span class="num">1</span> Enter crew access code</h2>
+          <div class="field-row">
+            <input id="codeInput" class="code-input" type="text" inputmode="text"
+                   autocapitalize="characters" autocomplete="off" placeholder="CREW CODE" />
+            <button id="codeBtn" class="btn-primary">Unlock</button>
+          </div>
+          <p id="codeNote" class="hint">Ask Manny for the code. It's checked on the phone — no internet needed.</p>
+        </li>
+
+        <!-- Step 2: add to home screen -->
+        <li class="step locked" id="step-install">
+          <h2><span class="num">2</span> Add to your home screen</h2>
+          <div id="installIos" class="install-help" hidden>
+            <p>On <b>iPhone (Safari)</b>:</p>
+            <ol><li>Tap the <b>Share</b> button <span class="ic">⬆︎</span> at the bottom.</li>
+                <li>Scroll down, tap <b>Add to Home Screen</b>.</li>
+                <li>Open <b>Nomad Translate</b> from your home screen from now on.</li></ol>
+          </div>
+          <div id="installAndroid" class="install-help" hidden>
+            <p>On <b>Android (Chrome)</b>:</p>
+            <ol><li>Tap the <b>⋮</b> menu (top-right).</li>
+                <li>Tap <b>Add to Home screen</b> / <b>Install app</b>.</li>
+                <li>Open <b>Nomad Translate</b> from your home screen from now on.</li></ol>
+            <button id="installBtn" class="btn-ghost" hidden>Install now</button>
+          </div>
+          <div id="installDesktop" class="install-help" hidden>
+            <p>You're on a computer. Installing to a home screen is for phones — on desktop you can just keep this tab. Open this link on your phone to install it there.</p>
+          </div>
+          <button class="btn-ghost next-btn" data-next="step-lang">Done — next</button>
+        </li>
+
+        <!-- Step 3: pick language -->
+        <li class="step locked" id="step-lang">
+          <h2><span class="num">3</span> Pick your language</h2>
+          <div class="lang-pick" id="langPick">
+            <button class="lang-opt" data-lang="en">English</button>
+            <button class="lang-opt" data-lang="es">Español</button>
+            <button class="lang-opt" data-lang="fr">Français (Québec)</button>
+          </div>
+          <p class="hint">This is the language <b>you</b> speak and hear. You can change it later in Settings.</p>
+          <button class="btn-ghost next-btn" data-next="step-download" disabled id="langNext">Next</button>
+        </li>
+
+        <!-- Step 4: download -->
+        <li class="step locked" id="step-download">
+          <h2><span class="num">4</span> Download for offline use</h2>
+          <p class="hint">Downloads once on <b>Wi-Fi</b> (<span id="dlSize">~230 MB</span>): the speech + translation models for all three languages. After this it works in airplane mode.</p>
+          <button id="offlineBtn" class="btn-primary wide">⬇ Download now (Wi-Fi)</button>
+          <div id="packBar" class="pack-bar" hidden><div id="packBarFill" class="pack-bar-fill"></div></div>
+          <p class="pack-note" id="offlineNote"></p>
+          <div id="readyBadge" class="ready-badge" hidden>✓ Ready for offline — no signal needed</div>
+        </li>
+
+        <!-- Step 5: voice check -->
+        <li class="step locked" id="step-voice">
+          <h2><span class="num">5</span> Voice check</h2>
+          <p class="hint">Your phone needs an offline voice so translations can be spoken aloud.</p>
+          <div id="voiceList" class="voice-list"></div>
+          <button id="voiceTestBtn" class="btn-ghost">🔊 Test my voice</button>
+          <p class="hint" id="voiceHelp" hidden></p>
+          <button id="enterBtn" class="btn-primary wide" disabled>Start translating →</button>
+        </li>
+      </ol>
     </section>
 
-    <main class="sides">
-      <div class="side" data-side="A">
-        <div class="side-head">
-          <span class="dot" id="dot-A"></span>
-          <select class="langsel" id="lang-A">
-            <option value="en">English</option>
-            <option value="es" selected>Español</option>
-            <option value="fr">Français (Québec)</option>
-          </select>
-        </div>
-        <button id="ptt-A" class="ptt">🎤 <span>Hold to talk</span></button>
-        <div id="interim-A" class="interim"></div>
-        <div id="chips-A" class="chips"></div>
+    <!-- ============ MAIN ============ -->
+    <section id="view-main" class="view" hidden>
+      <div class="main-toolbar">
+        <label class="show-toggle"><input type="checkbox" id="showThem" /> Show translation big (for them to read)</label>
       </div>
-
-      <div class="side" data-side="B">
-        <div class="side-head">
-          <span class="dot" id="dot-B"></span>
-          <select class="langsel" id="lang-B">
-            <option value="en" selected>English</option>
-            <option value="es">Español</option>
-            <option value="fr">Français (Québec)</option>
-          </select>
+      <main class="sides">
+        <div class="side" data-side="A">
+          <div class="side-head">
+            <span class="dot" id="dot-A"></span>
+            <select class="langsel" id="lang-A">
+              <option value="en">English</option>
+              <option value="es" selected>Español</option>
+              <option value="fr">Français (Québec)</option>
+            </select>
+            <span class="side-tag">you</span>
+          </div>
+          <button id="ptt-A" class="ptt">🎤 <span>Hold to talk</span></button>
+          <div id="interim-A" class="interim"></div>
+          <div id="chips-A" class="chips"></div>
         </div>
-        <button id="ptt-B" class="ptt">🎤 <span>Hold to talk</span></button>
-        <div id="interim-B" class="interim"></div>
-        <div id="chips-B" class="chips"></div>
-      </div>
-    </main>
 
-    <section class="transcript-wrap">
-      <h3>Transcript</h3>
-      <div id="transcript" class="transcript"></div>
+        <div class="side" data-side="B">
+          <div class="side-head">
+            <span class="dot" id="dot-B"></span>
+            <select class="langsel" id="lang-B">
+              <option value="en" selected>English</option>
+              <option value="es">Español</option>
+              <option value="fr">Français (Québec)</option>
+            </select>
+            <span class="side-tag">them</span>
+          </div>
+          <button id="ptt-B" class="ptt">🎤 <span>Hold to talk</span></button>
+          <div id="interim-B" class="interim"></div>
+          <div id="chips-B" class="chips"></div>
+        </div>
+      </main>
+
+      <section class="transcript-wrap">
+        <h3>Transcript</h3>
+        <div id="transcript" class="transcript"></div>
+      </section>
+
+      <footer class="foot">
+        <p>Runs fully on the phone with no signal — talk, translate, hear it back.
+        On-device speech takes a few seconds per line. CFRP / Québec crew terms auto-corrected.</p>
+      </footer>
     </section>
 
-    <footer class="foot">
-      <p>After the one-time download, the whole conversation runs on the phone with no signal —
-      talk, translate, and hear it back. On-device speech recognition takes a few seconds per
-      line in a browser (the native app is faster). CFRP/Québec crew terms auto-corrected.</p>
-    </footer>
+    <!-- ============ SETTINGS ============ -->
+    <section id="view-settings" class="view" hidden>
+      <div class="settings-card">
+        <h2>Settings</h2>
+        <label class="set-label">My language</label>
+        <select id="setLang" class="langsel wide">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français (Québec)</option>
+        </select>
+
+        <label class="set-label">Offline data</label>
+        <button id="redownloadBtn" class="btn-ghost wide">Re-download language data</button>
+        <button id="deleteBtn" class="btn-ghost wide danger">Delete downloaded data</button>
+
+        <label class="set-label">Access</label>
+        <button id="reenterBtn" class="btn-ghost wide">Re-enter access code</button>
+
+        <button id="backBtn" class="btn-primary wide">← Back to translator</button>
+        <p class="hint" id="setNote"></p>
+      </div>
+    </section>
+
+    <!-- show-to-them big overlay -->
+    <div id="bigOverlay" class="big-overlay" hidden>
+      <button id="bigClose" class="big-close">✕</button>
+      <div id="bigTextLang" class="big-lang"></div>
+      <div id="bigText" class="big-text"></div>
+    </div>
 
   </body>
 </html>
